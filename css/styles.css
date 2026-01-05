@@ -187,7 +187,7 @@ button {
    ============================================ */
 .header {
     background: transparent;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -538,8 +538,8 @@ button {
 .hero-content {
     position: relative;
     z-index: 1;
-    max-width: 600px;
-    padding: var(--spacing-2xl) var(--spacing-md);
+    width: 100%;
+    padding: var(--spacing-2xl) 0;
     margin-bottom: var(--spacing-2xl);
     animation: fadeInUp 0.8s ease;
 }
@@ -569,6 +569,11 @@ button {
     display: flex;
     gap: var(--spacing-md);
     flex-wrap: wrap;
+}
+
+.hero-buttons .btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: 0.875rem;
 }
 
 @keyframes fadeInUp {
@@ -956,31 +961,12 @@ button {
     color: var(--color-white);
     padding: var(--spacing-xl);
     border-radius: 16px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transition);
     opacity: 0;
     transform: translateY(20px);
     display: flex;
     flex-direction: column;
-    border: 2px solid transparent;
-    overflow: hidden;
-    position: relative;
-}
-
-.division-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-}
-
-.division-card:hover::before {
-    opacity: 1;
+    box-shadow: 0 4px 20px rgba(0, 64, 128, 0.15);
 }
 
 .division-card.animated {
@@ -989,27 +975,9 @@ button {
     animation: fadeInUp 0.6s ease;
 }
 
-/* Gradientes únicos para cada card */
-.division-card-1 {
-    background: linear-gradient(135deg, #004080 0%, #0059b3 100%);
-}
-
-.division-card-2 {
-    background: linear-gradient(135deg, #0066cc 0%, #0080ff 100%);
-}
-
-.division-card-3 {
-    background: linear-gradient(135deg, #003d7a 0%, #0066cc 100%);
-}
-
-.division-card-4 {
-    background: linear-gradient(135deg, #002d5c 0%, #004d99 100%);
-}
-
 .division-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 64, 128, 0.3);
-    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 64, 128, 0.25);
 }
 
 .division-icon-wrapper {
@@ -1017,22 +985,18 @@ button {
 }
 
 .division-icon {
-    width: 72px;
-    height: 72px;
+    width: 64px;
+    height: 64px;
     background: rgba(255, 255, 255, 0.15);
-    border-radius: 16px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: var(--transition);
 }
 
 .division-card:hover .division-icon {
-    transform: scale(1.1) rotate(5deg);
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .division-icon svg {
@@ -1050,9 +1014,6 @@ button {
     letter-spacing: -0.01em;
 }
 
-.division-card:hover .division-title {
-    transform: translateX(4px);
-}
 
 .division-description {
     font-family: var(--font-paragraph);
@@ -1067,9 +1028,6 @@ button {
     transition: opacity 0.3s ease;
 }
 
-.division-card:hover .division-description {
-    opacity: 1;
-}
 
 .division-toggle {
     display: inline-flex;
@@ -1090,14 +1048,8 @@ button {
 }
 
 .division-toggle:hover {
-    gap: var(--spacing-sm);
     background: rgba(255, 255, 255, 0.2);
-    transform: translateX(4px);
-    border-color: rgba(255, 255, 255, 0.4);
-}
-
-.division-card:hover .division-toggle {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .chevron {
@@ -1738,11 +1690,7 @@ button {
         min-width: 70px;
         width: auto;
     }
-    
-    .lang-option:first-child {
-        padding-top: 10px;
-    }
-    
+  
     .lang-chevron {
         stroke: var(--color-white);
     }
@@ -1761,7 +1709,7 @@ button {
     
     .hero-content {
         max-width: 100%;
-        padding: var(--spacing-2xl) var(--spacing-md);
+        padding: var(--spacing-2xl) 0;
         margin-bottom: 0;
         text-align: center;
         width: 100%;
@@ -1899,4 +1847,3 @@ button {
         gap: var(--spacing-lg);
     }
 }
-
