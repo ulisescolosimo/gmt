@@ -461,10 +461,6 @@ button {
     font-weight: 400;
 }
 
-.lang-option:first-child {
-    padding-top: 28px;
-}
-
 .lang-dropdown > .lang-option:first-of-type {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
