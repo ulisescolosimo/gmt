@@ -443,6 +443,8 @@ function activateNavLink() {
 }
 
 window.addEventListener('scroll', activateNavLink);
+// Activar nav link al cargar la página
+activateNavLink();
 
 // ============================================
 // Scroll Animations
@@ -558,15 +560,19 @@ if (contactForm) {
 // ============================================
 // Parallax Effect for Hero (optional)
 // ============================================
+// Desactivado para evitar deformación del fondo
+// Si se desea un efecto parallax sutil, descomentar y ajustar:
+/*
 const heroBackground = document.querySelector('.hero-background');
 
 if (heroBackground) {
     window.addEventListener('scroll', () => {
         const scrolled = window.pageYOffset;
-        const rate = scrolled * 0.5;
-        heroBackground.style.transform = `translateY(${rate}px) scale(1.1)`;
+        const rate = scrolled * 0.3;
+        heroBackground.style.transform = `translateY(${rate}px)`;
     });
 }
+*/
 
 // ============================================
 // Performance: Lazy load images
