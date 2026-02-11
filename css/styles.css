@@ -216,6 +216,30 @@ button {
     color: var(--color-white);
 }
 
+.logo-link {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 56px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.logo-img-blue {
+    display: none;
+}
+
+.header.scrolled .logo-img-white {
+    display: none;
+}
+
+.header.scrolled .logo-img-blue {
+    display: block;
+}
+
 .logo-menu-icon {
     display: none;
     flex-direction: column;
@@ -695,7 +719,22 @@ button {
 .quienes-somos-cards {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: 0;
+}
+
+/* Slot por card: da altura de scroll para que cada card quede sticky y la siguiente la reemplace */
+.quienes-card-slot {
+    min-height: 85vh;
+    display: flex;
+    align-items: flex-start;
+    padding-bottom: var(--spacing-xl);
+}
+
+.quienes-card-slot .quienes-card {
+    position: sticky;
+    top: 120px;
+    width: 100%;
+    flex-shrink: 0;
 }
 
 /* ============================================
@@ -705,6 +744,12 @@ button {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
+}
+
+.cards-container.quienes-somos-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
 .card {
@@ -739,15 +784,45 @@ button {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
+.card-number {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: var(--spacing-sm);
+    opacity: 0.9;
+}
+
+.card-primary .card-number {
+    color: var(--color-white);
+}
+
+.card-light .card-number {
+    color: var(--color-text);
+}
+
+/* Icono y título en la misma línea */
+.card-header-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
 .card-icon {
     width: 48px;
     height: 48px;
-    margin-bottom: var(--spacing-md);
+    flex-shrink: 0;
 }
 
 .card-icon svg {
     width: 100%;
     height: 100%;
+}
+
+.card-header-row .card-title {
+    margin-bottom: 0;
 }
 
 .card-title {
@@ -799,7 +874,7 @@ button {
    ============================================ */
 .quote-banner {
     position: relative;
-    padding: var(--spacing-2xl) 0;
+    padding: 5rem 0;
     text-align: center;
     color: var(--color-white);
     overflow: hidden;
@@ -811,8 +886,15 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
+    background: url('../assets/Graph.avif') center / cover no-repeat;
+}
+
+.quote-background::after {
+    content: '';
+    position: absolute;
+    inset: 0;
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    opacity: 0.9;
+    opacity: 0.5;
 }
 
 .quote-text {
@@ -845,6 +927,17 @@ button {
 .visual-icon svg {
     width: 100%;
     height: 100%;
+}
+
+.visual-icon-lottie {
+    width: 420px;
+    height: 420px;
+}
+
+.visual-icon-lottie dotlottie-wc {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 .network-icon {
@@ -900,16 +993,18 @@ button {
 .divisiones-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-xl);
+    gap: 10px;
     width: 100%;
+    align-items: start;
 }
 
 /* Alias para mantener compatibilidad */
 .divisiones-carousel {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-xl);
+    gap: 10px;
     width: 100%;
+    align-items: start;
 }
 
 .carousel-btn {
@@ -995,13 +1090,16 @@ button {
     background: var(--color-primary);
     color: var(--color-white);
     padding: var(--spacing-xl);
-    border-radius: 16px;
-    transition: var(--transition);
+    border-radius: 20px;
+    transition: box-shadow 0.3s ease;
     opacity: 0;
     transform: translateY(20px);
     display: flex;
     flex-direction: column;
+    width: 100%;
+    min-height: 300px;
     box-shadow: 0 4px 20px rgba(0, 64, 128, 0.15);
+    overflow: hidden;
 }
 
 .division-card.animated {
@@ -1011,8 +1109,7 @@ button {
 }
 
 .division-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 64, 128, 0.25);
+    box-shadow: 0 8px 28px rgba(0, 64, 128, 0.25);
 }
 
 .division-icon-wrapper {
@@ -1052,17 +1149,21 @@ button {
 
 .division-description {
     font-family: var(--font-paragraph);
-    font-size: 22px;
+    font-size: 1.125rem;
     font-weight: 400;
-    line-height: 30px;
-    color: var(--color-white);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.95);
     font-style: normal;
     flex: 1;
     margin-bottom: var(--spacing-md);
-    opacity: 0.95;
-    transition: opacity 0.3s ease;
+    min-height: 0;
+    height: 4.8em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-clamp: 3;
 }
-
 
 .division-toggle {
     display: inline-flex;
@@ -1101,12 +1202,12 @@ button {
 .division-details {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease, margin-top 0.4s ease;
+    transition: max-height 0.35s ease-out;
     margin-top: 0;
 }
 
 .division-toggle[aria-expanded="true"] + .division-details {
-    max-height: 500px;
+    max-height: 420px;
     margin-top: var(--spacing-md);
 }
 
@@ -1114,6 +1215,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
+    padding-right: var(--spacing-xs);
 }
 
 .division-details li {
@@ -1175,6 +1277,9 @@ button {
     gap: var(--spacing-md);
     padding-right: var(--spacing-xl);
     padding-top: var(--spacing-md);
+    position: sticky;
+    top: 120px;
+    align-self: flex-start;
 }
 
 .contact-title {
@@ -1422,11 +1527,62 @@ button {
     padding: var(--spacing-2xl) 0 var(--spacing-md);
 }
 
-.footer-content {
+.footer-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-xl);
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--spacing-2xl);
+    align-items: start;
     margin-bottom: var(--spacing-xl);
+}
+
+.footer-col-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.footer-logo-img {
+    width: 210px;
+    height: auto;
+    display: block;
+}
+
+.footer-social {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.footer-social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--color-light-gray);
+    transition: var(--transition);
+    border-radius: 8px;
+}
+
+.footer-social-icon:hover {
+    color: var(--color-white);
+}
+
+.footer-social-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.footer-col-center {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.footer-col-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
 }
 
 .footer-title {
@@ -1435,52 +1591,46 @@ button {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
     color: var(--color-white);
 }
 
-.footer-links {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.footer-links a {
-    color: var(--color-light-gray);
-    transition: var(--transition);
-}
-
-.footer-links a:hover {
-    color: var(--color-white);
-    padding-left: var(--spacing-xs);
-}
-
-.footer-contact {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.footer-contact li {
+.footer-contact-item {
     display: flex;
     align-items: flex-start;
     gap: var(--spacing-sm);
 }
 
-.footer-contact svg {
-    width: 20px;
-    height: 20px;
+.footer-contact-icon {
+    width: 30px;
+    height: 30px;
     flex-shrink: 0;
     margin-top: 2px;
+    color: var(--color-light-gray);
 }
 
-.footer-contact a {
+.footer-contact-text {
     color: var(--color-light-gray);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.footer-contact-text a {
+    color: inherit;
     transition: var(--transition);
 }
 
-.footer-contact a:hover {
+.footer-contact-text a:hover,
+a.footer-contact-text:hover {
     color: var(--color-white);
+}
+
+.footer-cnv {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--color-light-gray);
+    opacity: 0.9;
+    max-width: 260px;
 }
 
 .footer-copyright {
@@ -1513,6 +1663,21 @@ button {
         margin-bottom: var(--spacing-xl);
         padding-bottom: 0;
     }
+
+    /* En móvil: sin efecto sticky, las cards scrollean normal una tras otra */
+    .quienes-card-slot {
+        min-height: 0;
+        padding-bottom: var(--spacing-lg);
+    }
+
+    .quienes-card-slot .quienes-card {
+        position: relative;
+        top: 0;
+    }
+
+    .quienes-somos-cards {
+        gap: var(--spacing-lg);
+    }
     
     .form-row {
         grid-template-columns: 1fr;
@@ -1525,12 +1690,18 @@ button {
     
     .divisiones-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-lg);
+        gap: 10px;
+        align-items: start;
     }
     
     .divisiones-carousel {
         grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-lg);
+        gap: 10px;
+        align-items: start;
+    }
+    
+    .division-card {
+        min-height: 280px;
     }
     
     .contact-grid {
@@ -1538,7 +1709,36 @@ button {
         gap: var(--spacing-xl);
     }
     
+    .footer-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+        text-align: center;
+    }
+    
+    .footer-col-left {
+        align-items: center;
+    }
+    
+    .footer-col-center {
+        align-items: center;
+    }
+    
+    .footer-col-right {
+        align-items: center;
+    }
+    
+    .footer-cnv {
+        max-width: 100%;
+        text-align: center;
+    }
+    
+    .footer-contact-item {
+        justify-content: center;
+    }
+    
     .contact-content {
+        position: relative;
+        top: 0;
         padding-right: 0;
         padding-top: 0;
         text-align: center;
@@ -1790,6 +1990,11 @@ button {
         height: 200px;
     }
     
+    .visual-icon-lottie {
+        width: 280px;
+        height: 280px;
+    }
+    
     .cards-container {
         grid-template-columns: 1fr;
     }
@@ -1803,14 +2008,17 @@ button {
     .divisiones-carousel {
         display: flex;
         flex-direction: column;
-        gap: var(--spacing-lg);
+        gap: 10px;
         width: 100%;
+        align-items: stretch;
     }
     
     .divisiones-grid .division-card,
     .divisiones-carousel .division-card {
         width: 100%;
+        min-width: 0;
         padding: var(--spacing-md);
+        min-height: 260px;
     }
     
     .carousel-btn {
@@ -1829,9 +2037,12 @@ button {
     
     .divisiones-grid .division-description,
     .divisiones-carousel .division-description {
-        font-size: 16px;
-        line-height: 24px;
+        font-size: 1rem;
+        line-height: 1.5;
         margin-bottom: var(--spacing-sm);
+        height: 4.5em;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
     }
     
     .divisiones-grid .division-icon-wrapper,
@@ -1853,8 +2064,12 @@ button {
     
     .divisiones-grid .division-toggle,
     .divisiones-carousel .division-toggle {
-        font-size: 0.8125rem;
-        padding: var(--spacing-xs) 0;
+        font-size: 0.875rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+        min-height: 44px;
+        justify-content: center;
+        width: 100%;
+        margin-top: auto;
     }
     
     .divisiones-grid .division-details,
@@ -1883,6 +2098,8 @@ button {
     }
     
     .contact-content {
+        position: relative;
+        top: 0;
         padding-right: 0;
         gap: var(--spacing-md);
     }

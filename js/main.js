@@ -101,7 +101,7 @@ const translations = {
         quienesCard3Text: 'Nuestro enfoque integral del cliente y nuestras herramientas (diferentes, innovadoras y más eficientes) nos permiten alcanzar mejores resultados, el máximo ahorro impositivo posible y un blindaje integral del patrimonio.',
         
         // Quote
-        quoteText: '"La mejor inversión comienza en una correcta planificación"',
+        quoteText: '"La mejor inversión comienza<br>en una correcta planificación"',
         
         // Management
         managementLabel: 'Liderazgo con visión',
@@ -112,7 +112,7 @@ const translations = {
         // Divisiones
         divisionesLabel: 'Diversificación con visión estratégica',
         divisionesTitle: 'DIVISIONES',
-        divisionesDescription: 'Nuestros clientes reciben el asesoramiento integral y un seguimiento coordinado de cada una de nuestras áreas de trabajo.',
+        divisionesDescription: 'Nuestros clientes reciben el asesoramiento integral <br> y un seguimiento coordinado de cada una de nuestras áreas de trabajo.',
         divisionesVerMas: 'Ver Más',
         divisionCapitalTitle: 'PMKT Capital',
         divisionCapitalDesc: 'Potenciamos la inversión tradicional. Contamos con la solidez de los mejores brokers locales e internacionales.',
@@ -207,7 +207,7 @@ const translations = {
         quienesCard3Text: 'Our comprehensive approach to the client and our tools (different, innovative and more efficient) allow us to achieve better results, maximum possible tax savings and comprehensive asset protection.',
         
         // Quote
-        quoteText: '"The best investment begins with proper planning"',
+        quoteText: '"The best investment begins<br>with proper planning"',
         
         // Management
         managementLabel: 'Leadership with vision',
@@ -482,20 +482,22 @@ divisionToggles.forEach(toggle => {
     toggle.addEventListener('click', () => {
         const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
         const details = toggle.nextElementSibling;
-        
-        // Close other open divisions (optional - remove if you want multiple open)
+        const expandedMaxHeight = '420px';
+
+        // Cerrar las demás: solo una card abierta a la vez
         divisionToggles.forEach(otherToggle => {
             if (otherToggle !== toggle) {
                 otherToggle.setAttribute('aria-expanded', 'false');
-                otherToggle.nextElementSibling.style.maxHeight = '0';
+                const otherDetails = otherToggle.nextElementSibling;
+                if (otherDetails) otherDetails.style.maxHeight = '0';
             }
         });
-        
-        toggle.setAttribute('aria-expanded', !isExpanded);
-        
+
         if (!isExpanded) {
-            details.style.maxHeight = details.scrollHeight + 'px';
+            toggle.setAttribute('aria-expanded', 'true');
+            details.style.maxHeight = expandedMaxHeight;
         } else {
+            toggle.setAttribute('aria-expanded', 'false');
             details.style.maxHeight = '0';
         }
     });
