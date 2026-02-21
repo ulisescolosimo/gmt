@@ -3,7 +3,7 @@
 // ============================================
 const header = document.getElementById('header');
 const navToggle = document.getElementById('navToggle');
-const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+const nav = document.getElementById('nav');
 const navList = document.getElementById('navList');
 const navLinks = document.querySelectorAll('.nav-link');
 
@@ -23,28 +23,9 @@ window.addEventListener('scroll', () => {
 
 // Function to close mobile menu
 function closeMobileMenu() {
-    if (mobileMenuToggle) mobileMenuToggle.classList.remove('active');
     if (navToggle) navToggle.classList.remove('active');
-    navList.classList.remove('active');
+    if (nav) nav.classList.remove('active');
     document.body.style.overflow = '';
-}
-
-// Mobile menu toggle (hamburger icon in logo)
-if (mobileMenuToggle) {
-    mobileMenuToggle.addEventListener('click', () => {
-        const isActive = mobileMenuToggle.classList.toggle('active');
-        navList.classList.toggle('active');
-        document.body.style.overflow = isActive ? 'hidden' : '';
-        
-        // Also toggle nav toggle if exists
-        if (navToggle) {
-            if (isActive) {
-                navToggle.classList.add('active');
-            } else {
-                navToggle.classList.remove('active');
-            }
-        }
-    });
 }
 
 // Close button for mobile menu
@@ -55,12 +36,12 @@ if (navClose) {
     });
 }
 
-// Mobile menu toggle (nav toggle button)
-if (navToggle) {
+// Mobile menu toggle (hamburger on the right)
+if (navToggle && nav) {
     navToggle.addEventListener('click', () => {
-        navToggle.classList.toggle('active');
-        navList.classList.toggle('active');
-        document.body.style.overflow = navList.classList.contains('active') ? 'hidden' : '';
+        const isActive = navToggle.classList.toggle('active');
+        nav.classList.toggle('active', isActive);
+        document.body.style.overflow = isActive ? 'hidden' : '';
     });
 }
 
@@ -220,6 +201,7 @@ const translations = {
         divisionesTitle: 'DIVISIONS',
         divisionesDescription: 'Our clients receive comprehensive advice and coordinated follow-up from each of our work areas.',
         divisionesVerMas: 'See More',
+        divisionesVerMenos: 'See Less',
         divisionCapitalTitle: 'PMKT Capital',
         divisionCapitalDesc: 'We enhance traditional investment. We have the strength of the best local and international brokers.',
         divisionCapital1: 'Local and LATAM Investments',
@@ -372,32 +354,28 @@ if (langToggle && langDropdown) {
         }
     });
 
+    // Update button display based on current language (Argentina / USA flags + code)
+    function updateLangButton() {
+        const code = currentLang === 'es' ? 'ES' : 'EN';
+        const langCode = langToggle.querySelector('.lang-code');
+        if (langCode) langCode.textContent = code;
+        const flagAr = langToggle.querySelector('.lang-flag-ar');
+        const flagUs = langToggle.querySelector('.lang-flag-us');
+        if (flagAr) flagAr.classList.toggle('hidden', currentLang !== 'es');
+        if (flagUs) flagUs.classList.toggle('hidden', currentLang !== 'en');
+    }
+
     // Handle language selection
     const langOptions = document.querySelectorAll('.lang-option');
     langOptions.forEach(option => {
         option.addEventListener('click', () => {
             const selectedLang = option.dataset.lang;
-            const selectedFlag = option.querySelector('.lang-flag').textContent;
-            
-            // Update button
-            langToggle.querySelector('.lang-flag').textContent = selectedFlag;
-            
-            // Close dropdown
             closeDropdown();
-            
-            // Translate page
             translatePage(selectedLang);
+            updateLangButton();
         });
     });
-    
-    // Update button display based on current language
-    function updateLangButton() {
-        const flag = currentLang === 'es' ? '🇪🇸' : '🇺🇸';
-        const langFlag = langToggle.querySelector('.lang-flag');
-        if (langFlag) {
-            langFlag.textContent = flag;
-        }
-    }
+
     updateLangButton();
 }
 
@@ -474,31 +452,41 @@ document.querySelectorAll('[data-animate-delay]').forEach(el => {
 });
 
 // ============================================
-// Division Cards Toggle
+// Division Cards Toggle (solo una abierta a la vez)
 // ============================================
-const divisionToggles = document.querySelectorAll('.division-toggle');
+const divisionCards = document.querySelectorAll('.division-card');
 
-divisionToggles.forEach(toggle => {
+function setDivisionToggleLabel(toggle, key) {
+    const svg = toggle.querySelector('svg.chevron');
+    const text = (translations[currentLang] && translations[currentLang][key]) ? translations[currentLang][key] : (key === 'divisionesVerMenos' ? 'Ver Menos' : 'Ver Más');
+    toggle.setAttribute('data-i18n', key);
+    if (svg) toggle.innerHTML = text + ' ' + svg.outerHTML;
+}
+
+divisionCards.forEach(card => {
+    const toggle = card.querySelector('.division-toggle');
+    const details = card.querySelector('.division-details');
+    if (!toggle || !details) return;
+
     toggle.addEventListener('click', () => {
-        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-        const details = toggle.nextElementSibling;
-        const expandedMaxHeight = '420px';
+        const wasExpanded = toggle.getAttribute('aria-expanded') === 'true';
 
-        // Cerrar las demás: solo una card abierta a la vez
-        divisionToggles.forEach(otherToggle => {
-            if (otherToggle !== toggle) {
+        // Cerrar todas las cards (incluida la clickeada)
+        divisionCards.forEach(otherCard => {
+            const otherToggle = otherCard.querySelector('.division-toggle');
+            const otherDetails = otherCard.querySelector('.division-details');
+            if (otherToggle) {
                 otherToggle.setAttribute('aria-expanded', 'false');
-                const otherDetails = otherToggle.nextElementSibling;
-                if (otherDetails) otherDetails.style.maxHeight = '0';
+                setDivisionToggleLabel(otherToggle, 'divisionesVerMas');
             }
+            if (otherDetails) otherDetails.style.maxHeight = '0';
         });
 
-        if (!isExpanded) {
+        // Abrir solo la clickeada si estaba cerrada (el max-height lo define el CSS por breakpoint)
+        if (!wasExpanded) {
             toggle.setAttribute('aria-expanded', 'true');
-            details.style.maxHeight = expandedMaxHeight;
-        } else {
-            toggle.setAttribute('aria-expanded', 'false');
-            details.style.maxHeight = '0';
+            details.style.removeProperty('max-height');
+            setDivisionToggleLabel(toggle, 'divisionesVerMenos');
         }
     });
 });
