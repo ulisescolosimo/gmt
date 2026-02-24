@@ -95,6 +95,7 @@ const translations = {
         divisionesTitle: 'DIVISIONES',
         divisionesDescription: 'Nuestros clientes reciben el asesoramiento integral <br> y un seguimiento coordinado de cada una de nuestras áreas de trabajo.',
         divisionesVerMas: 'Ver Más',
+        divisionesVerMenos: 'Ver Menos',
         divisionCapitalTitle: 'PMKT Capital',
         divisionCapitalDesc: 'Potenciamos la inversión tradicional. Contamos con la solidez de los mejores brokers locales e internacionales.',
         divisionCapital1: 'Inversiones Locales y LATAM',
@@ -313,6 +314,9 @@ function translatePage(lang) {
             element.placeholder = translations[lang][key];
         }
     });
+
+    // Recalcular altura de la card abierta en Divisiones (contenido traducido puede cambiar altura)
+    if (typeof refreshOpenDivisionCardHeight === 'function') refreshOpenDivisionCardHeight();
 }
 
 // ============================================
@@ -452,44 +456,100 @@ document.querySelectorAll('[data-animate-delay]').forEach(el => {
 });
 
 // ============================================
-// Division Cards Toggle (solo una abierta a la vez)
+// Division Cards Toggle (SOLO UNA ABIERTA + animación)
 // ============================================
 const divisionCards = document.querySelectorAll('.division-card');
 
 function setDivisionToggleLabel(toggle, key) {
-    const svg = toggle.querySelector('svg.chevron');
-    const text = (translations[currentLang] && translations[currentLang][key]) ? translations[currentLang][key] : (key === 'divisionesVerMenos' ? 'Ver Menos' : 'Ver Más');
-    toggle.setAttribute('data-i18n', key);
-    if (svg) toggle.innerHTML = text + ' ' + svg.outerHTML;
+  const svg = toggle.querySelector('svg.chevron');
+  const fallback = key === 'divisionesVerMenos' ? 'Ver Menos' : 'Ver Más';
+  const text = (translations[currentLang] && translations[currentLang][key]) ? translations[currentLang][key] : fallback;
+
+  toggle.setAttribute('data-i18n', key);
+  if (svg) toggle.innerHTML = text + ' ' + svg.outerHTML;
+  else toggle.textContent = text;
 }
 
-divisionCards.forEach(card => {
-    const toggle = card.querySelector('.division-toggle');
-    const details = card.querySelector('.division-details');
-    if (!toggle || !details) return;
+function closeDivisionCard(card) {
+  const toggle = card.querySelector('.division-toggle');
+  const details = card.querySelector('.division-details');
+  if (!toggle || !details) return;
 
-    toggle.addEventListener('click', () => {
-        const wasExpanded = toggle.getAttribute('aria-expanded') === 'true';
+  toggle.setAttribute('aria-expanded', 'false');
+  setDivisionToggleLabel(toggle, 'divisionesVerMas');
 
-        // Cerrar todas las cards (incluida la clickeada)
-        divisionCards.forEach(otherCard => {
-            const otherToggle = otherCard.querySelector('.division-toggle');
-            const otherDetails = otherCard.querySelector('.division-details');
-            if (otherToggle) {
-                otherToggle.setAttribute('aria-expanded', 'false');
-                setDivisionToggleLabel(otherToggle, 'divisionesVerMas');
-            }
-            if (otherDetails) otherDetails.style.maxHeight = '0';
-        });
+  // animación: colapsar
+  details.style.maxHeight = '0px';
+}
 
-        // Abrir solo la clickeada si estaba cerrada (el max-height lo define el CSS por breakpoint)
-        if (!wasExpanded) {
-            toggle.setAttribute('aria-expanded', 'true');
-            details.style.removeProperty('max-height');
-            setDivisionToggleLabel(toggle, 'divisionesVerMenos');
-        }
-    });
+function openDivisionCard(card) {
+  const toggle = card.querySelector('.division-toggle');
+  const details = card.querySelector('.division-details');
+  if (!toggle || !details) return;
+
+  toggle.setAttribute('aria-expanded', 'true');
+  setDivisionToggleLabel(toggle, 'divisionesVerMenos');
+
+  // Forzar layout para que scrollHeight sea correcto (con max-height:0 suele dar 0)
+  details.style.maxHeight = 'none';
+  var h = details.scrollHeight;
+  details.style.maxHeight = '0px';
+  details.offsetHeight; // reflow
+  details.style.maxHeight = h + 'px';
+}
+
+// Inicializar todas cerradas (por las dudas)
+divisionCards.forEach(card => closeDivisionCard(card));
+
+// Delegación de eventos: un solo listener para todo
+document.addEventListener('click', (e) => {
+  const toggle = e.target.closest('.division-toggle');
+  if (!toggle) return;
+
+  const card = toggle.closest('.division-card');
+  if (!card) return;
+
+  e.preventDefault();
+
+  const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+
+  // Cerrar todas las demás
+  divisionCards.forEach(other => {
+    if (other !== card) closeDivisionCard(other);
+  });
+
+  // Toggle actual
+  if (isExpanded) closeDivisionCard(card);
+  else openDivisionCard(card);
 });
+
+// Recalcular maxHeight cuando:
+// - cambia el idioma (puede cambiar alturas)
+// - resize (responsive)
+function debounce(fn, wait = 150) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
+
+function refreshOpenDivisionCardHeight() {
+  const cards = document.querySelectorAll('.division-card');
+  const openCard = Array.from(cards).find(c => {
+    const t = c.querySelector('.division-toggle');
+    return t && t.getAttribute('aria-expanded') === 'true';
+  });
+  if (!openCard) return;
+
+  const details = openCard.querySelector('.division-details');
+  if (!details) return;
+
+  // recalcula altura real
+  details.style.maxHeight = details.scrollHeight + 'px';
+}
+
+window.addEventListener('resize', debounce(refreshOpenDivisionCardHeight, 200));
 
 // ============================================
 // Contact Form

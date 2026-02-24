@@ -1046,7 +1046,7 @@ button {
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     width: 100%;
-    align-items: start;
+    align-items: stretch;
 }
 
 /* Alias para mantener compatibilidad */
@@ -1055,7 +1055,7 @@ button {
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     width: 100%;
-    align-items: start;
+    align-items: stretch;
 }
 
 .carousel-btn {
@@ -1148,12 +1148,13 @@ button {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 340px;
+    min-height: 340px;
+    height: 100%;
     box-shadow: 0 4px 20px rgba(0, 64, 128, 0.15);
     overflow: hidden;
 }
 
-/* Solo la card abierta crece; las minimizadas mantienen la misma altura */
+/* Solo la card abierta crece; las minimizadas comparten la misma altura de fila */
 .division-card:has(.division-toggle[aria-expanded="true"]) {
     height: auto;
     min-height: 340px;
@@ -1257,8 +1258,8 @@ button {
     margin-top: 0;
 }
 
+/* max-height de .division-details lo controla JS (acordeón) */
 .division-toggle[aria-expanded="true"] + .division-details {
-    max-height: 420px;
     margin-top: var(--spacing-md);
 }
 
@@ -1683,18 +1684,21 @@ a.footer-contact-text:hover {
     color: var(--color-white);
 }
 
+.footer-bottom {
+    text-align: center;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .footer-cnv {
     font-size: 0.8125rem;
     line-height: 1.5;
     color: var(--color-light-gray);
     opacity: 0.9;
-    max-width: 260px;
+    margin-bottom: var(--spacing-sm);
 }
 
 .footer-copyright {
-    text-align: center;
-    padding-top: var(--spacing-lg);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 0.875rem;
     opacity: 0.8;
 }
@@ -1795,17 +1799,18 @@ a.footer-contact-text:hover {
     .divisiones-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-sm);
-        align-items: start;
+        align-items: stretch;
     }
     
     .divisiones-carousel {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-sm);
-        align-items: start;
+        align-items: stretch;
     }
     
     .division-card {
-        height: 300px;
+        min-height: 300px;
+        height: 100%;
     }
     
     .division-card:has(.division-toggle[aria-expanded="true"]) {
@@ -2272,7 +2277,8 @@ a.footer-contact-text:hover {
         width: 100%;
         min-width: 0;
         padding: var(--spacing-lg);
-        height: 280px;
+        min-height: 280px;
+        height: 100%;
     }
     
     .divisiones-grid .division-card:has(.division-toggle[aria-expanded="true"]),
@@ -2338,10 +2344,6 @@ a.footer-contact-text:hover {
     .divisiones-carousel .division-details li {
         line-height: 1.5;
         padding-left: var(--spacing-sm);
-    }
-    
-    .division-toggle[aria-expanded="true"] + .division-details {
-        max-height: 600px;
     }
     
     .contact {
@@ -2455,7 +2457,8 @@ a.footer-contact-text:hover {
     .divisiones-grid .division-card,
     .divisiones-carousel .division-card {
         padding: var(--spacing-md);
-        height: 260px;
+        min-height: 260px;
+        height: 100%;
     }
     
     .divisiones-grid .division-card:has(.division-toggle[aria-expanded="true"]),
