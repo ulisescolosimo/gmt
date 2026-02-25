@@ -128,7 +128,8 @@ const translations = {
         // Responsabilidad
         responsabilidadLabel: 'Compromiso social',
         responsabilidadTitle: 'RESPONSABILIDAD',
-        responsabilidadDescription: 'Grupo PMKT colabora con la Fundación Pequeños Pasos. Una ONG que mejora la calidad de vida de familias en Argentina, que se encuentran en riesgo social, a través de soluciones a largo plazo, en cuatro diferentes campos: Educación, Salud y Nutrición, Trabajo e Integración Social.',
+        responsabilidadSubtitle: 'Grupo PMKT colabora con la Fundación Pequeños Pasos.',
+        responsabilidadDescription: 'Una ONG que mejora la calidad de vida de familias en Argentina, que se encuentran en riesgo social, a través de soluciones a largo plazo, en cuatro diferentes campos: Educación, Salud y Nutrición, Trabajo e Integración Social.',
         responsabilidadLink: 'Si querés sumarte a la misión hacé click aquí: Fundación Pequeños Pasos',
         
         // Contact
@@ -235,7 +236,8 @@ const translations = {
         // Responsabilidad
         responsabilidadLabel: 'Social commitment',
         responsabilidadTitle: 'RESPONSIBILITY',
-        responsabilidadDescription: 'Grupo PMKT collaborates with Fundación Pequeños Pasos. An NGO that improves the quality of life of families in Argentina who are at social risk, through long-term solutions, in four different fields: Education, Health and Nutrition, Work and Social Integration.',
+        responsabilidadSubtitle: 'Grupo PMKT collaborates with Fundación Pequeños Pasos.',
+        responsabilidadDescription: 'An NGO that improves the quality of life of families in Argentina who are at social risk, through long-term solutions, in four different fields: Education, Health and Nutrition, Work and Social Integration.',
         responsabilidadLink: 'If you want to join the mission, click here: Fundación Pequeños Pasos',
         
         // Contact
@@ -275,9 +277,13 @@ const translations = {
 // Current language (default from localStorage or 'es')
 let currentLang = localStorage.getItem('language') || 'es';
 
+// Exponer para divisiones.js y otros
+window.currentLang = currentLang;
+
 // Function to translate the page
 function translatePage(lang) {
     currentLang = lang;
+    window.currentLang = lang;
     localStorage.setItem('language', lang);
     document.documentElement.lang = lang;
     
@@ -315,8 +321,8 @@ function translatePage(lang) {
         }
     });
 
-    // Recalcular altura de la card abierta en Divisiones (contenido traducido puede cambiar altura)
-    if (typeof refreshOpenDivisionCardHeight === 'function') refreshOpenDivisionCardHeight();
+    // Avisar a divisiones.js para actualizar etiquetas Ver Más/Ver Menos
+    window.dispatchEvent(new CustomEvent('languagechange', { detail: { lang: lang } }));
 }
 
 // ============================================
@@ -358,14 +364,14 @@ if (langToggle && langDropdown) {
         }
     });
 
-    // Update button display based on current language (Argentina / USA flags + code)
+    // Update button display based on current language (Spain / USA flags + code)
     function updateLangButton() {
         const code = currentLang === 'es' ? 'ES' : 'EN';
         const langCode = langToggle.querySelector('.lang-code');
         if (langCode) langCode.textContent = code;
-        const flagAr = langToggle.querySelector('.lang-flag-ar');
+        const flagEs = langToggle.querySelector('.lang-flag-es');
         const flagUs = langToggle.querySelector('.lang-flag-us');
-        if (flagAr) flagAr.classList.toggle('hidden', currentLang !== 'es');
+        if (flagEs) flagEs.classList.toggle('hidden', currentLang !== 'es');
         if (flagUs) flagUs.classList.toggle('hidden', currentLang !== 'en');
     }
 
@@ -454,102 +460,6 @@ document.querySelectorAll('[data-animate]').forEach(el => {
 document.querySelectorAll('[data-animate-delay]').forEach(el => {
     observer.observe(el);
 });
-
-// ============================================
-// Division Cards Toggle (SOLO UNA ABIERTA + animación)
-// ============================================
-const divisionCards = document.querySelectorAll('.division-card');
-
-function setDivisionToggleLabel(toggle, key) {
-  const svg = toggle.querySelector('svg.chevron');
-  const fallback = key === 'divisionesVerMenos' ? 'Ver Menos' : 'Ver Más';
-  const text = (translations[currentLang] && translations[currentLang][key]) ? translations[currentLang][key] : fallback;
-
-  toggle.setAttribute('data-i18n', key);
-  if (svg) toggle.innerHTML = text + ' ' + svg.outerHTML;
-  else toggle.textContent = text;
-}
-
-function closeDivisionCard(card) {
-  const toggle = card.querySelector('.division-toggle');
-  const details = card.querySelector('.division-details');
-  if (!toggle || !details) return;
-
-  toggle.setAttribute('aria-expanded', 'false');
-  setDivisionToggleLabel(toggle, 'divisionesVerMas');
-
-  // animación: colapsar
-  details.style.maxHeight = '0px';
-}
-
-function openDivisionCard(card) {
-  const toggle = card.querySelector('.division-toggle');
-  const details = card.querySelector('.division-details');
-  if (!toggle || !details) return;
-
-  toggle.setAttribute('aria-expanded', 'true');
-  setDivisionToggleLabel(toggle, 'divisionesVerMenos');
-
-  // Forzar layout para que scrollHeight sea correcto (con max-height:0 suele dar 0)
-  details.style.maxHeight = 'none';
-  var h = details.scrollHeight;
-  details.style.maxHeight = '0px';
-  details.offsetHeight; // reflow
-  details.style.maxHeight = h + 'px';
-}
-
-// Inicializar todas cerradas (por las dudas)
-divisionCards.forEach(card => closeDivisionCard(card));
-
-// Delegación de eventos: un solo listener para todo
-document.addEventListener('click', (e) => {
-  const toggle = e.target.closest('.division-toggle');
-  if (!toggle) return;
-
-  const card = toggle.closest('.division-card');
-  if (!card) return;
-
-  e.preventDefault();
-
-  const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-
-  // Cerrar todas las demás
-  divisionCards.forEach(other => {
-    if (other !== card) closeDivisionCard(other);
-  });
-
-  // Toggle actual
-  if (isExpanded) closeDivisionCard(card);
-  else openDivisionCard(card);
-});
-
-// Recalcular maxHeight cuando:
-// - cambia el idioma (puede cambiar alturas)
-// - resize (responsive)
-function debounce(fn, wait = 150) {
-  let t;
-  return (...args) => {
-    clearTimeout(t);
-    t = setTimeout(() => fn(...args), wait);
-  };
-}
-
-function refreshOpenDivisionCardHeight() {
-  const cards = document.querySelectorAll('.division-card');
-  const openCard = Array.from(cards).find(c => {
-    const t = c.querySelector('.division-toggle');
-    return t && t.getAttribute('aria-expanded') === 'true';
-  });
-  if (!openCard) return;
-
-  const details = openCard.querySelector('.division-details');
-  if (!details) return;
-
-  // recalcula altura real
-  details.style.maxHeight = details.scrollHeight + 'px';
-}
-
-window.addEventListener('resize', debounce(refreshOpenDivisionCardHeight, 200));
 
 // ============================================
 // Contact Form
@@ -645,198 +555,3 @@ if ('IntersectionObserver' in window) {
         imageObserver.observe(img);
     });
 }
-
-// ============================================
-// Divisiones Carousel
-// ============================================
-const divisionesCarousel = document.querySelector('.divisiones-carousel');
-const carouselPrevBtn = document.querySelector('.carousel-btn-prev');
-const carouselNextBtn = document.querySelector('.carousel-btn-next');
-const carouselIndicators = document.querySelector('.carousel-indicators');
-
-if (divisionesCarousel && carouselIndicators) {
-    const cards = divisionesCarousel.querySelectorAll('.division-card');
-    let currentIndex = 0;
-    let autoplayInterval = null;
-    const autoplayDelay = 4000; // 4 segundos
-    
-    // Create indicators
-    cards.forEach((_, index) => {
-        const indicator = document.createElement('button');
-        indicator.className = 'carousel-indicator';
-        indicator.setAttribute('aria-label', `Ir al slide ${index + 1}`);
-        if (index === 0) {
-            indicator.classList.add('active');
-        }
-        indicator.addEventListener('click', () => {
-            stopAutoplay();
-            goToSlide(index);
-            startAutoplay();
-        });
-        carouselIndicators.appendChild(indicator);
-    });
-    
-    const indicators = carouselIndicators.querySelectorAll('.carousel-indicator');
-    
-    // Update indicators
-    function updateIndicators() {
-        indicators.forEach((indicator, index) => {
-            if (index === currentIndex) {
-                indicator.classList.add('active');
-            } else {
-                indicator.classList.remove('active');
-            }
-        });
-    }
-    
-    // Update buttons state (if buttons exist)
-    function updateButtons() {
-        if (carouselPrevBtn) {
-            carouselPrevBtn.disabled = currentIndex === 0;
-        }
-        if (carouselNextBtn) {
-            carouselNextBtn.disabled = currentIndex === cards.length - 1;
-        }
-    }
-    
-    // Go to specific slide
-    function goToSlide(index) {
-        if (index < 0 || index >= cards.length) return;
-        
-        currentIndex = index;
-        const cardWidth = cards[0].offsetWidth;
-        const gap = window.innerWidth <= 768 ? 24 : 0; // 24px gap in mobile
-        const scrollPosition = currentIndex * (cardWidth + gap);
-        
-        divisionesCarousel.scrollTo({
-            left: scrollPosition,
-            behavior: 'smooth'
-        });
-        
-        updateIndicators();
-        updateButtons();
-    }
-    
-    // Next slide
-    function nextSlide() {
-        if (currentIndex < cards.length - 1) {
-            goToSlide(currentIndex + 1);
-        } else {
-            // Loop back to first slide
-            goToSlide(0);
-        }
-    }
-    
-    // Previous slide
-    function prevSlide() {
-        if (currentIndex > 0) {
-            goToSlide(currentIndex - 1);
-        } else {
-            // Loop to last slide
-            goToSlide(cards.length - 1);
-        }
-    }
-    
-    // Autoplay functions
-    function startAutoplay() {
-        stopAutoplay();
-        // Only autoplay on mobile (768px or less)
-        if (window.innerWidth <= 768) {
-            autoplayInterval = setInterval(() => {
-                nextSlide();
-            }, autoplayDelay);
-        }
-    }
-    
-    function stopAutoplay() {
-        if (autoplayInterval) {
-            clearInterval(autoplayInterval);
-            autoplayInterval = null;
-        }
-    }
-    
-    // Button events (if buttons exist)
-    if (carouselPrevBtn) {
-        carouselPrevBtn.addEventListener('click', () => {
-            stopAutoplay();
-            prevSlide();
-            startAutoplay();
-        });
-    }
-    
-    if (carouselNextBtn) {
-        carouselNextBtn.addEventListener('click', () => {
-            stopAutoplay();
-            nextSlide();
-            startAutoplay();
-        });
-    }
-    
-    // Touch swipe support
-    let touchStartX = 0;
-    let touchEndX = 0;
-    
-    divisionesCarousel.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-        stopAutoplay();
-    }, { passive: true });
-    
-    divisionesCarousel.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-        startAutoplay();
-    }, { passive: true });
-    
-    function handleSwipe() {
-        const swipeThreshold = 50;
-        const diff = touchStartX - touchEndX;
-        
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0) {
-                // Swipe left - next
-                nextSlide();
-            } else {
-                // Swipe right - previous
-                prevSlide();
-            }
-        }
-    }
-    
-    // Pause autoplay on hover (for desktop)
-    divisionesCarousel.addEventListener('mouseenter', stopAutoplay);
-    divisionesCarousel.addEventListener('mouseleave', startAutoplay);
-    
-    // Scroll event to update current index
-    let scrollTimeout;
-    divisionesCarousel.addEventListener('scroll', () => {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(() => {
-            const cardWidth = cards[0].offsetWidth;
-            const gap = window.innerWidth <= 768 ? 24 : 0;
-            const scrollLeft = divisionesCarousel.scrollLeft;
-            const newIndex = Math.round(scrollLeft / (cardWidth + gap));
-            
-            if (newIndex !== currentIndex && newIndex >= 0 && newIndex < cards.length) {
-                currentIndex = newIndex;
-                updateIndicators();
-                updateButtons();
-            }
-        }, 100);
-    }, { passive: true });
-    
-    // Initialize
-    updateButtons();
-    startAutoplay();
-    
-    // Update on resize
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            goToSlide(currentIndex);
-            stopAutoplay();
-            startAutoplay();
-        }, 250);
-    });
-}
-

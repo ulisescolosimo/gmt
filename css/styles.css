@@ -82,7 +82,7 @@ body {
 }
 
 /* Evitar overflow en elementos que puedan desbordar */
-table, pre, .contact-form, .division-card {
+table, pre, .contact-form {
     max-width: 100%;
 }
 
@@ -166,6 +166,15 @@ button {
     line-height: 1.2;
     color: var(--color-primary);
     margin: 0;
+}
+
+.section-subtitle {
+    font-family: var(--font-paragraph);
+    font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-text);
+    margin: 0.5em 0 1em 0;
 }
 
 .section-description {
@@ -401,7 +410,7 @@ button {
     flex-shrink: 0;
 }
 
-/* Flag Icons (Argentina / USA) - tamaño fijo */
+/* Flag Icons (España / USA) - tamaño fijo */
 .lang-flag-fi {
     width: 24px;
     height: 18px;
@@ -1022,267 +1031,7 @@ button {
     }
 }
 
-/* ============================================
-   Divisiones
-   ============================================ */
-.divisiones .container {
-    max-width: 1800px;
-    padding: 0 var(--spacing-xl);
-}
-
-.section-header {
-    text-align: center;
-    max-width: 900px;
-    margin: 0 auto var(--spacing-2xl);
-}
-
-.divisiones-carousel-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-.divisiones-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    width: 100%;
-    align-items: stretch;
-}
-
-/* Alias para mantener compatibilidad */
-.divisiones-carousel {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    width: 100%;
-    align-items: stretch;
-}
-
-.carousel-btn {
-    display: none;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    background: var(--color-white);
-    color: var(--color-primary);
-    border: 2px solid var(--color-primary);
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.carousel-btn:hover {
-    background: var(--color-primary);
-    color: var(--color-white);
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-}
-
-.carousel-btn:active {
-    transform: translateY(-50%) scale(0.95);
-}
-
-.carousel-btn svg {
-    width: 24px;
-    height: 24px;
-}
-
-.carousel-btn-prev {
-    left: -24px;
-}
-
-.carousel-btn-next {
-    right: -24px;
-}
-
-.carousel-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.carousel-btn:disabled:hover {
-    background: var(--color-white);
-    color: var(--color-primary);
-    transform: translateY(-50%);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.carousel-indicators {
-    display: none;
-    justify-content: center;
-    gap: var(--spacing-xs);
-    margin-top: var(--spacing-lg);
-}
-
-.carousel-indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--color-light-gray);
-    cursor: pointer;
-    transition: var(--transition);
-    border: none;
-    padding: 0;
-}
-
-.carousel-indicator.active {
-    background: var(--color-primary);
-    width: 24px;
-    border-radius: 5px;
-}
-
-.division-card {
-    background: var(--color-primary);
-    color: var(--color-white);
-    padding: var(--spacing-xl);
-    border-radius: 20px;
-    transition: box-shadow 0.3s ease, height 0.35s ease-out;
-    opacity: 0;
-    transform: translateY(20px);
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-height: 340px;
-    height: 100%;
-    box-shadow: 0 4px 20px rgba(0, 64, 128, 0.15);
-    overflow: hidden;
-}
-
-/* Solo la card abierta crece; las minimizadas comparten la misma altura de fila */
-.division-card:has(.division-toggle[aria-expanded="true"]) {
-    height: auto;
-    min-height: 340px;
-}
-
-.division-card.animated {
-    opacity: 1;
-    transform: translateY(0);
-    animation: fadeInUp 0.6s ease;
-}
-
-.division-card:hover {
-    box-shadow: 0 8px 28px rgba(0, 64, 128, 0.25);
-}
-
-.division-icon-wrapper {
-    margin-bottom: var(--spacing-md);
-}
-
-.division-icon {
-    width: 64px;
-    height: 64px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-}
-
-.division-card:hover .division-icon {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.division-icon svg {
-    width: 40px;
-    height: 40px;
-    stroke-width: 2.5;
-}
-
-.division-title {
-    font-family: var(--font-heading);
-    font-size: 1.625rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-md);
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-}
-
-
-.division-description {
-    font-family: var(--font-paragraph);
-    font-size: 1.125rem;
-    font-weight: 400;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.95);
-    font-style: normal;
-    flex: 1;
-    margin-bottom: var(--spacing-md);
-    min-height: 0;
-}
-
-.division-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    color: var(--color-white);
-    font-weight: 600;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: var(--spacing-sm) var(--spacing-md);
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    width: fit-content;
-    margin-top: auto;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.division-toggle:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.chevron {
-    width: 16px;
-    height: 16px;
-    stroke: var(--color-white);
-    transition: transform 0.3s ease;
-}
-
-.division-toggle[aria-expanded="true"] .chevron {
-    transform: rotate(180deg);
-}
-
-.division-details {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease-out;
-    margin-top: 0;
-}
-
-/* max-height de .division-details lo controla JS (acordeón) */
-.division-toggle[aria-expanded="true"] + .division-details {
-    margin-top: var(--spacing-md);
-}
-
-.division-details ul {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-    padding-right: var(--spacing-xs);
-}
-
-.division-details li {
-    padding-left: var(--spacing-md);
-    position: relative;
-    line-height: 1.6;
-    opacity: 0.9;
-}
-
-.division-details li::before {
-    content: '•';
-    position: absolute;
-    left: 0;
-    color: var(--color-white);
-}
+/* Estilos de Divisiones en css/divisiones.css */
 
 /* ============================================
    Link External
@@ -1590,14 +1339,17 @@ button {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: var(--spacing-2xl);
-    align-items: start;
+    align-items: center;
+    justify-items: center;
     margin-bottom: var(--spacing-xl);
 }
 
 .footer-col-left {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .footer-logo-img {
@@ -1616,11 +1368,11 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 52px;
+    height: 52px;
     color: var(--color-light-gray);
     transition: var(--transition);
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 .footer-social-icon:hover {
@@ -1628,20 +1380,26 @@ button {
 }
 
 .footer-social-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
 }
 
 .footer-col-center {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: var(--spacing-md);
+    width: 100%;
 }
 
 .footer-col-right {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
     gap: var(--spacing-md);
+    width: 100%;
 }
 
 .footer-title {
@@ -1789,41 +1547,6 @@ a.footer-contact-text:hover {
     
     .form-row {
         grid-template-columns: 1fr;
-    }
-    
-    .divisiones .container {
-        max-width: 100%;
-        padding: 0 var(--spacing-md);
-    }
-    
-    .divisiones-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-sm);
-        align-items: stretch;
-    }
-    
-    .divisiones-carousel {
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-sm);
-        align-items: stretch;
-    }
-    
-    .division-card {
-        min-height: 300px;
-        height: 100%;
-    }
-    
-    .division-card:has(.division-toggle[aria-expanded="true"]) {
-        height: auto;
-        min-height: 300px;
-    }
-    
-    .division-title {
-        font-size: 1.375rem;
-    }
-    
-    .division-description {
-        font-size: 1rem;
     }
     
     .contact-grid {
@@ -2254,98 +1977,6 @@ a.footer-contact-text:hover {
         grid-template-columns: 1fr;
     }
     
-    .divisiones .container {
-        padding: 0 1.25rem;
-    }
-    
-    .divisiones-carousel-wrapper {
-        position: relative;
-        padding: 0;
-    }
-    
-    .divisiones-grid,
-    .divisiones-carousel {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-sm);
-        width: 100%;
-        align-items: stretch;
-    }
-    
-    .divisiones-grid .division-card,
-    .divisiones-carousel .division-card {
-        width: 100%;
-        min-width: 0;
-        padding: var(--spacing-lg);
-        min-height: 280px;
-        height: 100%;
-    }
-    
-    .divisiones-grid .division-card:has(.division-toggle[aria-expanded="true"]),
-    .divisiones-carousel .division-card:has(.division-toggle[aria-expanded="true"]) {
-        height: auto;
-        min-height: 280px;
-    }
-    
-    .carousel-btn {
-        display: none;
-    }
-    
-    .carousel-indicators {
-        display: none;
-    }
-    
-    .divisiones-grid .division-title,
-    .divisiones-carousel .division-title {
-        font-size: 1.25rem;
-        margin-bottom: var(--spacing-sm);
-    }
-    
-    .divisiones-grid .division-description,
-    .divisiones-carousel .division-description {
-        font-size: 1rem;
-        line-height: 1.5;
-        margin-bottom: var(--spacing-sm);
-    }
-    
-    .divisiones-grid .division-icon-wrapper,
-    .divisiones-carousel .division-icon-wrapper {
-        margin-bottom: var(--spacing-sm);
-    }
-    
-    .divisiones-grid .division-icon,
-    .divisiones-carousel .division-icon {
-        width: 48px;
-        height: 48px;
-    }
-    
-    .divisiones-grid .division-icon svg,
-    .divisiones-carousel .division-icon svg {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .divisiones-grid .division-toggle,
-    .divisiones-carousel .division-toggle {
-        font-size: 0.875rem;
-        padding: var(--spacing-sm) var(--spacing-md);
-        min-height: 48px;
-        justify-content: center;
-        width: 100%;
-        margin-top: auto;
-    }
-    
-    .divisiones-grid .division-details,
-    .divisiones-carousel .division-details {
-        font-size: 0.9375rem;
-    }
-    
-    .divisiones-grid .division-details li,
-    .divisiones-carousel .division-details li {
-        line-height: 1.5;
-        padding-left: var(--spacing-sm);
-    }
-    
     .contact {
         padding: var(--spacing-xl) 0;
     }
@@ -2454,19 +2085,6 @@ a.footer-contact-text:hover {
         font-size: 1.75rem;
     }
     
-    .divisiones-grid .division-card,
-    .divisiones-carousel .division-card {
-        padding: var(--spacing-md);
-        min-height: 260px;
-        height: 100%;
-    }
-    
-    .divisiones-grid .division-card:has(.division-toggle[aria-expanded="true"]),
-    .divisiones-carousel .division-card:has(.division-toggle[aria-expanded="true"]) {
-        height: auto;
-        min-height: 260px;
-    }
-    
     .contact-form {
         padding: var(--spacing-md);
     }
@@ -2523,11 +2141,6 @@ a.footer-contact-text:hover {
     
     .logo-img {
         height: 40px;
-    }
-    
-    .divisiones-grid .division-title,
-    .divisiones-carousel .division-title {
-        font-size: 1.125rem;
     }
     
     .footer-row {

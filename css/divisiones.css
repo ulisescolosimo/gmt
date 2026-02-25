@@ -1,0 +1,301 @@
+/* ============================================
+   Divisiones – Misma altura cerradas; abierta usa todo el alto necesario.
+   Solo una card abierta a la vez. Sin scroll dentro de la card.
+   ============================================ */
+
+.divisiones .container {
+    max-width: 1800px;
+    padding: 0 var(--spacing-xl);
+}
+
+.divisiones .section-header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto var(--spacing-2xl);
+}
+
+.divisiones-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
+    align-items: start;
+    width: 100%;
+}
+
+/* Cerradas: todas la misma altura (suficiente para que la descripción más larga se vea entera). Abierta: crece con su contenido. */
+.division-card {
+    --division-closed-height: 460px;
+    min-height: var(--division-closed-height);
+    height: var(--division-closed-height);
+    display: flex;
+    flex-direction: column;
+    background: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--spacing-xl);
+    border-radius: 20px;
+    transition: box-shadow 0.3s ease, height 0.35s ease-out;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    box-shadow: 0 4px 20px rgba(0, 64, 128, 0.15);
+}
+
+.division-card.is-open {
+    height: auto;
+    min-height: var(--division-closed-height);
+}
+
+.division-card.animated {
+    opacity: 1;
+    transform: translateY(0);
+    animation: divisionFadeInUp 0.6s ease;
+}
+
+@keyframes divisionFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.division-card:hover {
+    box-shadow: 0 8px 28px rgba(0, 64, 128, 0.25);
+}
+
+.division-icon-wrapper {
+    flex-shrink: 0;
+    margin-bottom: var(--spacing-md);
+}
+
+.division-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.division-card:hover .division-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.division-icon svg {
+    width: 40px;
+    height: 40px;
+    stroke-width: 2.5;
+}
+
+.division-title {
+    font-family: var(--font-heading);
+    font-size: 1.625rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    flex-shrink: 0;
+}
+
+.division-description {
+    font-family: var(--font-paragraph);
+    font-size: 1.125rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.95);
+    flex: 1;
+    margin-bottom: var(--spacing-md);
+    min-height: 0;
+    overflow: hidden;
+}
+
+.division-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    width: fit-content;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.division-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.division-toggle .chevron {
+    width: 16px;
+    height: 16px;
+    stroke: var(--color-white);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.division-toggle[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+}
+
+/* Panel de detalles: al abrir ocupa todo el alto necesario, sin scroll */
+.division-details {
+    flex-shrink: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+
+.division-card.is-open .division-details {
+    margin-top: var(--spacing-md);
+    max-height: 2000px;
+    overflow: visible;
+}
+
+.division-details ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding-right: var(--spacing-xs);
+    padding-left: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.division-details li {
+    padding-left: var(--spacing-md);
+    position: relative;
+    line-height: 1.6;
+    opacity: 0.95;
+}
+
+.division-details li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--color-white);
+}
+
+/* Tablet: 2 columnas */
+@media (max-width: 1024px) {
+    .divisiones .container {
+        padding: 0 var(--spacing-md);
+    }
+
+    .divisiones-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .division-card {
+        --division-closed-height: 420px;
+    }
+
+    .division-title {
+        font-size: 1.375rem;
+    }
+
+    .division-description {
+        font-size: 1rem;
+    }
+
+    .division-card.is-open .division-details {
+        max-height: 3000px;
+    }
+}
+
+/* Móvil: 1 columna; no hace falta misma altura, se apilan verticalmente */
+@media (max-width: 768px) {
+    .divisiones .container {
+        padding: 0 1.25rem;
+    }
+
+    .divisiones-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .division-card {
+        height: auto;
+        min-height: 280px;
+        padding: var(--spacing-lg);
+    }
+
+    .division-card.is-open {
+        min-height: 280px;
+    }
+
+    .division-title {
+        font-size: 1.25rem;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .division-description {
+        font-size: 1rem;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .division-icon-wrapper {
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .division-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .division-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .division-toggle {
+        font-size: 0.875rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+        min-height: 48px;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .division-card.is-open .division-details {
+        max-height: 3000px;
+    }
+
+    .division-details li {
+        font-size: 0.9375rem;
+        line-height: 1.5;
+        padding-left: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .division-card {
+        min-height: 260px;
+        padding: var(--spacing-md);
+    }
+
+    .division-card.is-open {
+        min-height: 260px;
+    }
+
+    .division-title {
+        font-size: 1.125rem;
+    }
+
+    .division-card.is-open .division-details {
+        max-height: 3000px;
+    }
+}
