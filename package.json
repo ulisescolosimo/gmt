@@ -1,0 +1,9 @@
+{
+  "name": "gmt-grupopmkt",
+  "version": "1.0.0",
+  "description": "Sitio Grupo PMKT - formulario de contacto con SMTP",
+  "private": true,
+  "dependencies": {
+    "nodemailer": "^6.9.16"
+  }
+}

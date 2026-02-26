@@ -485,25 +485,27 @@ if (contactForm) {
         }
         submitBtn.disabled = true;
         
-        // Simulate form submission (replace with actual API call)
+        // Enviar a la API de Vercel (SMTP)
         try {
-            // Example: await fetch('/api/contact', { method: 'POST', body: JSON.stringify(data) });
-            
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Success
-            formMessage.textContent = translations[currentLang].contactSuccess;
-            formMessage.className = 'form-message show success';
-            contactForm.reset();
-            
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                formMessage.classList.remove('show');
-            }, 5000);
-            
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json().catch(() => ({}));
+
+            if (response.ok && result.ok) {
+                formMessage.textContent = translations[currentLang].contactSuccess;
+                formMessage.className = 'form-message show success';
+                contactForm.reset();
+                setTimeout(() => {
+                    formMessage.classList.remove('show');
+                }, 5000);
+            } else {
+                formMessage.textContent = result.error || translations[currentLang].contactError;
+                formMessage.className = 'form-message show error';
+            }
         } catch (error) {
-            // Error
             formMessage.textContent = translations[currentLang].contactError;
             formMessage.className = 'form-message show error';
         } finally {
