@@ -2048,8 +2048,10 @@ a.footer-contact-text:hover {
         word-break: break-word;
     }
 
-    /* Ocultar botón circular en móvil */
-    .whatsapp-desktop {
+    /* Ocultar botón circular de WhatsApp en móvil */
+    .whatsapp-desktop,
+    a.whatsapp-desktop,
+    body .whatsapp-desktop {
         display: none !important;
     }
 
