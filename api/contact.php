@@ -3,6 +3,9 @@
  * Formulario de contacto - Envío por SMTP para cPanel.
  * Configuración SMTP al inicio del archivo (sin .env).
  */
+error_reporting(0);
+ini_set('display_errors', 0);
+
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -29,23 +32,19 @@ $smtp = [
 ];
 // ——————————————————————————————————————————————————————————————————
 
-$raw = file_get_contents('php://input');
-$data = json_decode($raw, true) ?: [];
-
-$nombre     = trim((string) ($data['nombre'] ?? ''));
-$apellido   = trim((string) ($data['apellido'] ?? ''));
-$empresa    = trim((string) ($data['empresa'] ?? ''));
-$telefono   = trim((string) ($data['telefono'] ?? ''));
-$email      = trim((string) ($data['email'] ?? ''));
-$comentarios = trim((string) ($data['comentarios'] ?? ''));
-
-if ($nombre === '' || $apellido === '' || $empresa === '' || $email === '' || $comentarios === '') {
-    http_response_code(400);
-    echo json_encode([
-        'ok'    => false,
-        'error' => 'Faltan campos requeridos: nombre, apellido, empresa, email, comentarios'
-    ]);
+function jsonError($message, $code = 500) {
+    http_response_code($code);
+    echo json_encode(['ok' => false, 'error' => $message]);
     exit;
+}
+
+function readSmptResponse($fp) {
+    do {
+        $line = @fgets($fp, 515);
+        if ($line === false) return false;
+        $line = trim($line);
+    } while ($line !== '' && !preg_match('/^\d{3}\s/', $line));
+    return $line;
 }
 
 function escapeHtml($s) {
@@ -53,95 +52,128 @@ function escapeHtml($s) {
     return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 }
 
-$from     = $smtp['user'];
-$to       = $smtp['to_email'];
-$subject  = '[Grupo PMKT] Contacto: ' . $nombre . ' ' . $apellido . ' - ' . $empresa;
-$replyTo  = $email;
+try {
+    $raw = file_get_contents('php://input');
+    $data = json_decode($raw, true) ?: [];
 
-$text = "Nombre: $nombre $apellido\n"
-    . "Empresa: $empresa\n"
-    . "Email: $email\n"
-    . "Teléfono: " . ($telefono !== '' ? $telefono : '—') . "\n\n"
-    . "Comentarios:\n$comentarios";
+    $nombre      = trim((string) ($data['nombre'] ?? ''));
+    $apellido    = trim((string) ($data['apellido'] ?? ''));
+    $empresa     = trim((string) ($data['empresa'] ?? ''));
+    $telefono    = trim((string) ($data['telefono'] ?? ''));
+    $email       = trim((string) ($data['email'] ?? ''));
+    $comentarios = trim((string) ($data['comentarios'] ?? ''));
 
-$html = '<p><strong>Nombre:</strong> ' . escapeHtml($nombre) . ' ' . escapeHtml($apellido) . '</p>'
-    . '<p><strong>Empresa:</strong> ' . escapeHtml($empresa) . '</p>'
-    . '<p><strong>Email:</strong> <a href="mailto:' . escapeHtml($email) . '">' . escapeHtml($email) . '</a></p>'
-    . '<p><strong>Teléfono:</strong> ' . ($telefono !== '' ? escapeHtml($telefono) : '—') . '</p>'
-    . '<p><strong>Comentarios:</strong></p><p>' . nl2br(escapeHtml($comentarios)) . '</p>';
+    if ($nombre === '' || $apellido === '' || $empresa === '' || $email === '' || $comentarios === '') {
+        jsonError('Faltan campos requeridos: nombre, apellido, empresa, email, comentarios', 400);
+    }
 
-$boundary = '----=_Part_' . md5(uniqid());
-$body = "--$boundary\r\n"
-    . "Content-Type: text/plain; charset=UTF-8\r\n\r\n"
-    . $text . "\r\n"
-    . "--$boundary\r\n"
-    . "Content-Type: text/html; charset=UTF-8\r\n\r\n"
-    . $html . "\r\n"
-    . "--$boundary--";
+    $from    = $smtp['user'];
+    $to      = $smtp['to_email'];
+    $subject = '[Grupo PMKT] Contacto: ' . $nombre . ' ' . $apellido . ' - ' . $empresa;
+    $replyTo = $email;
 
-$message = "From: \"Grupo PMKT Contacto\" <{$from}>\r\n"
-    . "To: $to\r\n"
-    . "Reply-To: $replyTo\r\n"
-    . "Subject: $subject\r\n"
-    . "MIME-Version: 1.0\r\n"
-    . "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n\r\n"
-    . $body;
+    $text = "Nombre: $nombre $apellido\n"
+        . "Empresa: $empresa\n"
+        . "Email: $email\n"
+        . "Teléfono: " . ($telefono !== '' ? $telefono : '—') . "\n\n"
+        . "Comentarios:\n$comentarios";
 
-$errno = 0;
-$errstr = '';
-$ctx = stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]);
-$fp = @stream_socket_client(
-    'ssl://' . $smtp['host'] . ':' . $smtp['port'],
-    $errno,
-    $errstr,
-    30,
-    STREAM_CLIENT_CONNECT,
-    $ctx
-);
+    $html = '<p><strong>Nombre:</strong> ' . escapeHtml($nombre) . ' ' . escapeHtml($apellido) . '</p>'
+        . '<p><strong>Empresa:</strong> ' . escapeHtml($empresa) . '</p>'
+        . '<p><strong>Email:</strong> <a href="mailto:' . escapeHtml($email) . '">' . escapeHtml($email) . '</a></p>'
+        . '<p><strong>Teléfono:</strong> ' . ($telefono !== '' ? escapeHtml($telefono) : '—') . '</p>'
+        . '<p><strong>Comentarios:</strong></p><p>' . nl2br(escapeHtml($comentarios)) . '</p>';
 
-if (!$fp) {
-    http_response_code(500);
-    echo json_encode(['ok' => false, 'error' => 'Error al enviar el mensaje']);
-    exit;
+    $boundary = '----=_Part_' . md5(uniqid());
+    $body = "--$boundary\r\n"
+        . "Content-Type: text/plain; charset=UTF-8\r\n\r\n"
+        . $text . "\r\n"
+        . "--$boundary\r\n"
+        . "Content-Type: text/html; charset=UTF-8\r\n\r\n"
+        . $html . "\r\n"
+        . "--$boundary--";
+
+    $message = "From: \"Grupo PMKT Contacto\" <{$from}>\r\n"
+        . "To: $to\r\n"
+        . "Reply-To: $replyTo\r\n"
+        . "Subject: $subject\r\n"
+        . "MIME-Version: 1.0\r\n"
+        . "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n\r\n"
+        . $body;
+
+    $ctx = stream_context_create([
+        'ssl' => [
+            'verify_peer'      => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true,
+        ]
+    ]);
+
+    $fp = @stream_socket_client(
+        'ssl://' . $smtp['host'] . ':' . $smtp['port'],
+        $errno,
+        $errstr,
+        15,
+        STREAM_CLIENT_CONNECT,
+        $ctx
+    );
+
+    if (!$fp) {
+        jsonError('No se pudo conectar al servidor de correo. Compruebe en cPanel que el hosting permite conexiones salientes por el puerto 465.');
+    }
+
+    $read = readSmptResponse($fp);
+    if ($read === false || substr($read, 0, 1) !== '2') {
+        @fclose($fp);
+        jsonError('Error al conectar con el servidor SMTP.');
+    }
+
+    $send = function ($cmd) use ($fp) {
+        fwrite($fp, $cmd . "\r\n");
+    };
+
+    $send('EHLO ' . ($smtp['host'] ?? 'localhost'));
+    readSmptResponse($fp);
+
+    $send('AUTH LOGIN');
+    readSmptResponse($fp);
+    $send(base64_encode($smtp['user']));
+    readSmptResponse($fp);
+    $send(base64_encode($smtp['pass']));
+    $auth = readSmptResponse($fp);
+
+    if ($auth === false || strpos($auth, '235') !== 0) {
+        @fclose($fp);
+        jsonError('Error de autenticación con el servidor de correo. Verifique usuario y contraseña SMTP en api/contact.php.');
+    }
+
+    $send('MAIL FROM:<' . $from . '>');
+    if (readSmptResponse($fp) === false) {
+        @fclose($fp);
+        jsonError('Error al enviar el mensaje.');
+    }
+    $send('RCPT TO:<' . $to . '>');
+    if (readSmptResponse($fp) === false) {
+        @fclose($fp);
+        jsonError('Error al enviar el mensaje.');
+    }
+    $send('DATA');
+    readSmptResponse($fp);
+    fwrite($fp, $message . "\r\n.\r\n");
+    $dataResp = readSmptResponse($fp);
+    if ($dataResp === false || substr($dataResp, 0, 1) !== '2') {
+        @fclose($fp);
+        jsonError('Error al enviar el mensaje.');
+    }
+    $send('QUIT');
+    @fclose($fp);
+
+    http_response_code(200);
+    echo json_encode(['ok' => true]);
+
+} catch (Throwable $e) {
+    if (function_exists('error_log')) {
+        @error_log('contact.php: ' . $e->getMessage());
+    }
+    jsonError('Error al enviar el mensaje.');
 }
-
-$read = function () use ($fp) {
-    $line = @fgets($fp, 515);
-    return $line !== false ? $line : '';
-};
-
-$send = function ($cmd) use ($fp) {
-    fwrite($fp, $cmd . "\r\n");
-};
-
-// 220
-$read();
-$send('EHLO ' . ($smtp['host'] ?? 'localhost'));
-while ($line = $read()) {
-    if (preg_match('/^\d{3}\s/', $line) && substr(trim($line), 3, 1) === ' ') break;
-}
-$send('AUTH LOGIN');
-$read();
-$send(base64_encode($smtp['user']));
-$read();
-$send(base64_encode($smtp['pass']));
-$auth = $read();
-if (strpos($auth, '235') !== 0) {
-    fclose($fp);
-    http_response_code(500);
-    echo json_encode(['ok' => false, 'error' => 'Error al enviar el mensaje']);
-    exit;
-}
-$send('MAIL FROM:<' . $from . '>');
-$read();
-$send('RCPT TO:<' . $to . '>');
-$read();
-$send('DATA');
-$read();
-fwrite($fp, $message . "\r\n.\r\n");
-$read();
-$send('QUIT');
-fclose($fp);
-
-http_response_code(200);
-echo json_encode(['ok' => true]);
