@@ -291,20 +291,43 @@
         width: 100%;
     }
 
-    /* Apertura fluida en móvil: curva suave y max-height acotado para que la interpolación sea natural */
+    /* Despliegue muy lento y suave en móvil */
     .division-details {
-        transition: max-height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+        transition: max-height 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .division-card.is-open .division-details {
         max-height: 600px;
-        transition: max-height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+        transition: max-height 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     }
+
+    /* Los ítems del listado aparecen con un ligero retardo escalonado */
+    .division-card.is-open .division-details li {
+        animation: divisionDetailsItemIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+    .division-card.is-open .division-details li:nth-child(1) { animation-delay: 0.05s; }
+    .division-card.is-open .division-details li:nth-child(2) { animation-delay: 0.1s; }
+    .division-card.is-open .division-details li:nth-child(3) { animation-delay: 0.15s; }
+    .division-card.is-open .division-details li:nth-child(4) { animation-delay: 0.2s; }
+    .division-card.is-open .division-details li:nth-child(5) { animation-delay: 0.25s; }
+    .division-card.is-open .division-details li:nth-child(6) { animation-delay: 0.3s; }
+    .division-card.is-open .division-details li:nth-child(7) { animation-delay: 0.35s; }
 
     .division-details li {
         font-size: 0.9375rem;
         line-height: 1.5;
         padding-left: var(--spacing-sm);
+    }
+}
+
+@keyframes divisionDetailsItemIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 

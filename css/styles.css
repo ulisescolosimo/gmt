@@ -585,11 +585,6 @@ body > a.whatsapp-sticky svg {
     fill: currentColor;
 }
 
-/* Barra WhatsApp móvil: oculta por defecto (solo se muestra en @media 768px) */
-.whatsapp-mobile {
-    display: none;
-}
-
 .nav-toggle {
     display: none;
     flex-direction: column;
@@ -2048,19 +2043,26 @@ a.footer-contact-text:hover {
         word-break: break-word;
     }
 
-    /* Ocultar botón circular de WhatsApp en móvil */
-    .whatsapp-desktop,
-    a.whatsapp-desktop,
-    body .whatsapp-desktop {
-        display: none !important;
+    /* Botón flotante WhatsApp en móvil: alineado a la derecha, sin barra full width */
+    .whatsapp-sticky {
+        left: auto;
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        max-width: 52px;
+        min-height: 52px;
+        bottom: max(16px, env(safe-area-inset-bottom, 16px));
+        right: max(16px, env(safe-area-inset-right, 16px));
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
     }
-
-    /* Mostrar barra WhatsApp móvil (estilos críticos ya van inline en el HTML) */
-    .whatsapp-mobile {
-        display: flex !important;
-        -webkit-tap-highlight-color: transparent;
-        touch-action: manipulation;
-        font-family: var(--font-heading), sans-serif;
+    .whatsapp-sticky:hover {
+        transform: translateZ(0) scale(1.08);
+        -webkit-transform: translateZ(0) scale(1.08);
+    }
+    .whatsapp-sticky svg {
+        width: 28px;
+        height: 28px;
     }
 }
 
