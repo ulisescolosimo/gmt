@@ -145,9 +145,14 @@ Para trabajar localmente:
    **Opción C - VS Code Live Server:**
    - Instala la extensión "Live Server"
    - Clic derecho en `index.html` → "Open with Live Server"
+   - **Nota:** Live Server no ejecuta PHP. Para probar el **formulario de contacto** en local, usa la Opción D.
 
-3. **Abre en el navegador**:
-   - Ve a `http://localhost:8000`
+   **Opción D - PHP (recomendado para probar el formulario):**
+   ```bash
+   php -S 127.0.0.1:8000
+   ```
+   - Abre en el navegador: `http://127.0.0.1:8000`
+   - El envío del formulario irá a `api/contact.php` y funcionará correctamente.
 
 ## 📱 Pruebas
 
