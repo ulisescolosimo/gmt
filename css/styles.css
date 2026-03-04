@@ -572,6 +572,17 @@ button {
 .whatsapp-sticky svg {
     width: 30px;
     height: 30px;
+    flex-shrink: 0;
+}
+
+/* Alta especificidad para que ningún reset o regla global pise el botón flotante */
+body > a.whatsapp-sticky {
+    position: fixed;
+    background: #25d366;
+    color: #fff;
+}
+body > a.whatsapp-sticky svg {
+    fill: currentColor;
 }
 
 .nav-toggle {
@@ -2032,24 +2043,49 @@ a.footer-contact-text:hover {
         word-break: break-word;
     }
 
-    /* WhatsApp flotante en móvil: capa propia y safe area para que sea clickeable */
-    .whatsapp-sticky {
-        bottom: max(16px, env(safe-area-inset-bottom, 16px));
-        right: max(16px, env(safe-area-inset-right, 16px));
-        width: 52px;
-        height: 52px;
-        min-width: 52px;
-        min-height: 52px;
+    /* WhatsApp flotante en móvil: redefinir todos los estilos para que siempre se apliquen */
+    body .whatsapp-sticky,
+    a.whatsapp-sticky {
+        position: fixed !important;
+        bottom: max(16px, env(safe-area-inset-bottom, 16px)) !important;
+        right: max(16px, env(safe-area-inset-right, 16px)) !important;
+        width: 52px !important;
+        height: 52px !important;
+        min-width: 52px !important;
+        min-height: 52px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        border-radius: 50% !important;
+        background: #25d366 !important;
+        color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 4px 14px rgba(37, 211, 102, 0.45) !important;
         transform: translateZ(0);
         -webkit-transform: translateZ(0);
+        z-index: 9998 !important;
+        overflow: hidden;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        text-decoration: none !important;
+        cursor: pointer;
     }
-    .whatsapp-sticky:hover {
-        transform: translateZ(0) scale(1.08);
-        -webkit-transform: translateZ(0) scale(1.08);
+    body .whatsapp-sticky:hover,
+    a.whatsapp-sticky:hover {
+        transform: translateZ(0) scale(1.08) !important;
+        -webkit-transform: translateZ(0) scale(1.08) !important;
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5) !important;
     }
-    .whatsapp-sticky svg {
-        width: 28px;
-        height: 28px;
+    body .whatsapp-sticky svg,
+    a.whatsapp-sticky svg {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        fill: currentColor !important;
+        color: inherit !important;
     }
 }
 
