@@ -1,10 +1,10 @@
 /* ============================================
-   Divisiones – Misma altura cerradas; abierta usa todo el alto necesario.
-   Solo una card abierta a la vez. Sin scroll dentro de la card.
+   Divisiones – 4 cards una al lado de la otra
+   Grid horizontal; en móvil se apilan en columna
    ============================================ */
 
 .divisiones .container {
-    max-width: 1800px;
+    max-width: 1400px;
     padding: 0 var(--spacing-xl);
 }
 
@@ -14,62 +14,77 @@
     margin: 0 auto var(--spacing-2xl);
 }
 
+/* Formato fila: las 4 cards una al lado de la otra; solo la abierta crece, las demás no cambian */
 .divisiones-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
     align-items: start;
     width: 100%;
 }
 
-/* Cerradas: todas la misma altura. Abierta: crece con su contenido. Botón siempre en la misma fila (misma altura). */
+/* ----- Base card ----- */
 .division-card {
-    --division-closed-height: 460px;
-    --division-top-height: 348px; /* = closed - padding - botón; igual en todas para alinear botones */
-    min-height: var(--division-closed-height);
-    height: var(--division-closed-height);
-    display: grid;
-    grid-template-rows: 1fr auto 0fr;
-    background: var(--color-primary);
-    color: var(--color-white);
-    padding: var(--spacing-xl);
-    border-radius: 20px;
-    transition: box-shadow 0.3s ease, height 0.35s ease-out;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(20px);
-    box-shadow: 0 4px 20px rgba(0, 64, 128, 0.15);
-}
-
-.division-card.is-open {
-    height: auto;
-    min-height: var(--division-closed-height);
-    grid-template-rows: var(--division-top-height) auto 1fr;
-}
-
-/* Fila 1: icono + título + descripción (misma altura en todas las cards para alinear el botón) */
-.division-card-top {
-    min-height: 0;
+    position: relative;
     display: flex;
     flex-direction: column;
+    padding: var(--spacing-lg) var(--spacing-md);
+    border-radius: 16px;
     overflow: hidden;
+    cursor: default;
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
 }
 
-.division-card.is-open .division-card-top {
-    height: auto;
-    overflow: hidden;
+/* Desktop: altura fija para que todas las cards midan igual */
+@media (min-width: 1025px) {
+    .division-card {
+        min-height: 380px;
+    }
 }
 
 .division-card.animated {
     opacity: 1;
-    transform: translateY(0);
-    animation: divisionFadeInUp 0.6s ease;
 }
 
-@keyframes divisionFadeInUp {
+/* Entrada escalonada y con movimiento distinto por card */
+.division-card--capital.animated {
+    animation: divisionEnterLeft 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.division-card--planning.animated {
+    animation: divisionEnterUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+.division-card--services.animated {
+    animation: divisionEnterUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+}
+.division-card--pymes.animated {
+    animation: divisionEnterBottom 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+}
+
+@keyframes divisionEnterLeft {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes divisionEnterUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes divisionEnterBottom {
+    from {
+        opacity: 0;
+        transform: translateY(32px);
     }
     to {
         opacity: 1;
@@ -77,136 +92,247 @@
     }
 }
 
-.division-card:hover {
-    box-shadow: 0 8px 28px rgba(0, 64, 128, 0.25);
+/* ----- Todas las cards: mismo gradiente azul ----- */
+.division-card--capital,
+.division-card--planning,
+.division-card--services,
+.division-card--pymes {
+    background: linear-gradient(165deg, var(--color-primary) 0%, var(--color-primary-dark) 50%, #002244 100%);
+    color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.35s ease;
 }
 
-.division-icon-wrapper {
-    flex-shrink: 0;
+.division-card--capital:hover,
+.division-card--planning:hover,
+.division-card--services:hover,
+.division-card--pymes:hover {
+    box-shadow: 0 20px 40px rgba(0, 64, 128, 0.35);
+}
+
+/* ----- Capital ----- */
+.division-card--capital {
+    align-items: stretch;
+}
+.division-card--capital .division-card__icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.division-card--capital .division-card__icon svg {
+    width: 24px;
+    height: 24px;
+}
+.division-card--capital .division-card__title {
+    margin-bottom: var(--spacing-xs);
+    font-size: 1.25rem;
+}
+.division-card--capital .division-card__desc {
+    margin-bottom: var(--spacing-md);
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+.division-card--capital .division-card__toggle {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+/* ----- Planning ----- */
+.division-card--planning .division-card__icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.division-card--planning .division-card__icon svg {
+    width: 24px;
+    height: 24px;
+}
+.division-card--planning .division-card__title {
+    margin-bottom: var(--spacing-xs);
+    font-size: 1.25rem;
+}
+.division-card--planning .division-card__desc {
+    margin-bottom: var(--spacing-md);
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+.division-card--planning .division-card__toggle {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+/* ----- Services ----- */
+.division-card--services .division-card__icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.division-card--services .division-card__icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.division-card--services .division-card__title {
+    margin-bottom: var(--spacing-xs);
+    font-size: 1.25rem;
+}
+
+.division-card--services .division-card__desc {
+    margin-bottom: var(--spacing-md);
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.division-card--services .division-card__toggle {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+/* ----- Pymes ----- */
+.division-card--pymes .division-card__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
     margin-bottom: var(--spacing-md);
 }
 
-.division-icon {
-    width: 64px;
-    height: 64px;
+.division-card--pymes .division-card__icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
     background: rgba(255, 255, 255, 0.15);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s ease;
 }
 
-.division-card:hover .division-icon {
-    background: rgba(255, 255, 255, 0.2);
+.division-card--pymes .division-card__icon svg {
+    width: 22px;
+    height: 22px;
 }
 
-.division-icon svg {
-    width: 40px;
-    height: 40px;
-    stroke-width: 2.5;
-}
-
-.division-title {
-    font-family: var(--font-heading);
-    font-size: 1.625rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-md);
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    flex-shrink: 0;
-}
-
-.division-description {
-    font-family: var(--font-paragraph);
-    font-size: 1.125rem;
-    font-weight: 400;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.95);
+.division-card--pymes .division-card__text {
     flex: 1;
-    margin-bottom: var(--spacing-md);
-    min-height: 0;
-    overflow: hidden;
+    min-width: 0;
 }
 
-.division-toggle {
+.division-card--pymes .division-card__title {
+    font-size: 1.125rem;
+    margin-bottom: 0;
+}
+
+.division-card--pymes .division-card__desc {
+    font-size: 1rem;
+    margin-top: 0;
+}
+
+.division-card--pymes .division-card__toggle {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+/* ----- Toggle (común) ----- */
+.division-card__toggle {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
-    color: var(--color-white);
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     padding: var(--spacing-sm) var(--spacing-md);
-    transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    width: fit-content;
-    flex-shrink: 0;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-white);
     cursor: pointer;
     font-family: inherit;
+    transition: background 0.25s ease, border-color 0.25s ease;
 }
 
-.division-toggle:hover {
+.division-card__toggle:hover {
     background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
-.division-toggle .chevron {
-    width: 16px;
-    height: 16px;
-    stroke: var(--color-white);
-    transition: transform 0.3s ease;
-    flex-shrink: 0;
+.division-card__chevron {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.5s cubic-bezier(0.32, 0.72, 0.46, 1);
 }
 
-.division-toggle[aria-expanded="true"] .chevron,
-.division-toggle .chevron.rotate-180 {
+.division-card__chevron.is-open {
     transform: rotate(180deg);
 }
 
-/* Panel de detalles: se muestra hacia abajo sin mover el botón; animación sutil */
-.division-details {
-    flex-shrink: 0;
+/* ----- Detalles desplegables ----- */
+.division-card__details {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.25s ease-out;
+    margin: 0;
+    padding: 0;
+    transition: max-height 0.65s cubic-bezier(0.33, 0, 0.2, 1), margin-top 0.65s cubic-bezier(0.33, 0, 0.2, 1);
 }
 
-.division-card.is-open .division-details {
-    margin-top: var(--spacing-md);
-    max-height: 2000px;
-    overflow: visible;
-    transition: max-height 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+.division-card.is-open .division-card__details {
+    max-height: 1200px;
+    margin-top: var(--spacing-sm);
+    transition: max-height 0.5s cubic-bezier(0.32, 0.72, 0.46, 1), margin-top 0.5s cubic-bezier(0.32, 0.72, 0.46, 1);
 }
 
-.division-details ul {
+.division-card__details ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
-    padding-right: var(--spacing-xs);
-    padding-left: 0;
-    margin: 0;
-    list-style: none;
 }
 
-.division-details li {
+.division-card.is-open .division-card__details ul {
+    padding-top: var(--spacing-md);
+}
+
+.division-card__details li {
     padding-left: var(--spacing-md);
     position: relative;
-    line-height: 1.6;
-    opacity: 0.95;
+    line-height: 1.55;
+    font-size: 0.9375rem;
 }
 
-.division-details li::before {
-    content: '•';
+.division-card__details li::before {
+    content: '';
     position: absolute;
     left: 0;
-    color: var(--color-white);
+    top: 0.5em;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
 }
 
-/* Tablet: 2 columnas */
+/* ----- Responsive ----- */
 @media (max-width: 1024px) {
     .divisiones .container {
         padding: 0 var(--spacing-md);
@@ -214,140 +340,50 @@
 
     .divisiones-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-md);
-    }
-
-    .division-card {
-        --division-closed-height: 420px;
-        --division-top-height: 308px;
-    }
-
-    .division-title {
-        font-size: 1.375rem;
-    }
-
-    .division-description {
-        font-size: 1rem;
-    }
-
-    .division-card.is-open .division-details {
-        max-height: 3000px;
+        gap: var(--spacing-sm);
     }
 }
 
-/* Móvil: 1 columna; no hace falta misma altura, se apilan verticalmente */
 @media (max-width: 768px) {
-    .divisiones .container {
-        padding: 0 1.25rem;
-    }
-
     .divisiones-grid {
         grid-template-columns: 1fr;
         gap: var(--spacing-md);
     }
 
     .division-card {
-        height: auto;
-        min-height: 280px;
-        padding: var(--spacing-lg);
-        --division-top-height: 184px;
-        transition: box-shadow 0.3s ease;
-        overflow: hidden;
+        min-height: 0;
     }
 
-    .division-card.is-open {
-        min-height: 280px;
-    }
-
-    .division-title {
-        font-size: 1.25rem;
-        margin-bottom: var(--spacing-sm);
-    }
-
-    .division-description {
-        font-size: 1rem;
-        margin-bottom: var(--spacing-sm);
-    }
-
-    .division-icon-wrapper {
-        margin-bottom: var(--spacing-sm);
-    }
-
-    .division-icon {
-        width: 48px;
-        height: 48px;
-    }
-
-    .division-icon svg {
-        width: 28px;
-        height: 28px;
-    }
-
-    .division-toggle {
-        font-size: 0.875rem;
-        padding: var(--spacing-sm) var(--spacing-md);
-        min-height: 48px;
-        justify-content: center;
+    .division-card__toggle {
         width: 100%;
+        justify-content: center;
+        min-height: 48px;
     }
 
-    /* Despliegue muy lento y suave en móvil */
-    .division-details {
-        transition: max-height 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .division-card.is-open .division-details {
-        max-height: 600px;
-        transition: max-height 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    /* Los ítems del listado aparecen con un ligero retardo escalonado */
-    .division-card.is-open .division-details li {
-        animation: divisionDetailsItemIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-    }
-    .division-card.is-open .division-details li:nth-child(1) { animation-delay: 0.05s; }
-    .division-card.is-open .division-details li:nth-child(2) { animation-delay: 0.1s; }
-    .division-card.is-open .division-details li:nth-child(3) { animation-delay: 0.15s; }
-    .division-card.is-open .division-details li:nth-child(4) { animation-delay: 0.2s; }
-    .division-card.is-open .division-details li:nth-child(5) { animation-delay: 0.25s; }
-    .division-card.is-open .division-details li:nth-child(6) { animation-delay: 0.3s; }
-    .division-card.is-open .division-details li:nth-child(7) { animation-delay: 0.35s; }
-
-    .division-details li {
-        font-size: 0.9375rem;
-        line-height: 1.5;
-        padding-left: var(--spacing-sm);
-    }
-}
-
-@keyframes divisionDetailsItemIn {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .division-card.is-open .division-card__details {
+        max-height: 800px;
     }
 }
 
 @media (max-width: 480px) {
+    .divisiones .container {
+        padding: 0 1.25rem;
+    }
+
     .division-card {
-        min-height: 260px;
         padding: var(--spacing-md);
-        --division-top-height: 164px;
     }
 
-    .division-card.is-open {
-        min-height: 260px;
+    .division-card--capital .division-card__title {
+        font-size: 1.5rem;
     }
 
-    .division-title {
-        font-size: 1.125rem;
+    .division-card--planning .division-card__title,
+    .division-card--services .division-card__title {
+        font-size: 1.2rem;
     }
 
-    /* PMKT Planning tiene más ítems; dar un poco más de espacio para que no se corte */
-    .division-card.is-open .division-details {
-        max-height: 700px;
+    .division-card--pymes .division-card__title {
+        font-size: 1.25rem;
     }
 }
