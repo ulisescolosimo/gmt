@@ -300,13 +300,8 @@ function translatePage(lang) {
                     element.innerHTML = translations[lang][key];
                 }
             } else if (element.tagName === 'BUTTON' && element.classList.contains('division-toggle')) {
-                // For division toggle buttons, preserve the SVG chevron
-                const svg = element.querySelector('svg.chevron');
-                if (svg) {
-                    element.innerHTML = translations[lang][key] + ' ' + svg.outerHTML;
-                } else {
-                    element.innerHTML = translations[lang][key];
-                }
+                // Alpine.js controla el texto de los botones de divisiones; no sobrescribir
+                return;
             } else {
                 element.innerHTML = translations[lang][key];
             }

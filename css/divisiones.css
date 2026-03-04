@@ -22,13 +22,14 @@
     width: 100%;
 }
 
-/* Cerradas: todas la misma altura (suficiente para que la descripción más larga se vea entera). Abierta: crece con su contenido. */
+/* Cerradas: todas la misma altura. Abierta: crece con su contenido. Botón siempre en la misma fila (misma altura). */
 .division-card {
     --division-closed-height: 460px;
+    --division-top-height: 348px; /* = closed - padding - botón; igual en todas para alinear botones */
     min-height: var(--division-closed-height);
     height: var(--division-closed-height);
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 1fr auto 0fr;
     background: var(--color-primary);
     color: var(--color-white);
     padding: var(--spacing-xl);
@@ -43,6 +44,20 @@
 .division-card.is-open {
     height: auto;
     min-height: var(--division-closed-height);
+    grid-template-rows: var(--division-top-height) auto 1fr;
+}
+
+/* Fila 1: icono + título + descripción (misma altura en todas las cards para alinear el botón) */
+.division-card-top {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.division-card.is-open .division-card-top {
+    height: auto;
+    overflow: hidden;
 }
 
 .division-card.animated {
@@ -147,22 +162,24 @@
     flex-shrink: 0;
 }
 
-.division-toggle[aria-expanded="true"] .chevron {
+.division-toggle[aria-expanded="true"] .chevron,
+.division-toggle .chevron.rotate-180 {
     transform: rotate(180deg);
 }
 
-/* Panel de detalles: al abrir ocupa todo el alto necesario, sin scroll */
+/* Panel de detalles: se muestra hacia abajo sin mover el botón; animación sutil */
 .division-details {
     flex-shrink: 0;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease-out;
+    transition: max-height 0.25s ease-out;
 }
 
 .division-card.is-open .division-details {
     margin-top: var(--spacing-md);
     max-height: 2000px;
     overflow: visible;
+    transition: max-height 0.4s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .division-details ul {
@@ -202,6 +219,7 @@
 
     .division-card {
         --division-closed-height: 420px;
+        --division-top-height: 308px;
     }
 
     .division-title {
@@ -232,6 +250,9 @@
         height: auto;
         min-height: 280px;
         padding: var(--spacing-lg);
+        --division-top-height: 184px;
+        transition: box-shadow 0.3s ease;
+        overflow: hidden;
     }
 
     .division-card.is-open {
@@ -270,8 +291,14 @@
         width: 100%;
     }
 
+    /* Apertura fluida en móvil: curva suave y max-height acotado para que la interpolación sea natural */
+    .division-details {
+        transition: max-height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+
     .division-card.is-open .division-details {
-        max-height: 3000px;
+        max-height: 600px;
+        transition: max-height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
     }
 
     .division-details li {
@@ -285,6 +312,7 @@
     .division-card {
         min-height: 260px;
         padding: var(--spacing-md);
+        --division-top-height: 164px;
     }
 
     .division-card.is-open {
@@ -295,7 +323,8 @@
         font-size: 1.125rem;
     }
 
+    /* PMKT Planning tiene más ítems; dar un poco más de espacio para que no se corte */
     .division-card.is-open .division-details {
-        max-height: 3000px;
+        max-height: 700px;
     }
 }

@@ -558,6 +558,10 @@ button {
     justify-content: center;
     box-shadow: 0 4px 14px rgba(37, 211, 102, 0.45);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .whatsapp-sticky:hover {
@@ -2026,6 +2030,26 @@ a.footer-contact-text:hover {
     
     .link-external {
         word-break: break-word;
+    }
+
+    /* WhatsApp flotante en móvil: capa propia y safe area para que sea clickeable */
+    .whatsapp-sticky {
+        bottom: max(16px, env(safe-area-inset-bottom, 16px));
+        right: max(16px, env(safe-area-inset-right, 16px));
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        min-height: 52px;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+    .whatsapp-sticky:hover {
+        transform: translateZ(0) scale(1.08);
+        -webkit-transform: translateZ(0) scale(1.08);
+    }
+    .whatsapp-sticky svg {
+        width: 28px;
+        height: 28px;
     }
 }
 
